@@ -1,0 +1,12 @@
+# fly.toml app configuration file generated for botnet-technofutur on 2025-09-03T09:48:04+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'botnet-technofutur'
+primary_region = 'ams'
+
+[build]
+
+[[vm]]
+  size = 'shared-cpu-1x'
