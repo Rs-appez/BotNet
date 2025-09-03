@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.13.3-slim
 
 ENV TZ="Europe/Brussels"
 
@@ -7,4 +7,4 @@ COPY requirements.txt /botNet/
 RUN pip install -r requirements.txt
 COPY . /botNet/
 
-CMD ["python3", "botNet.py"]
+CMD python main.py
