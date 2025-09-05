@@ -7,6 +7,9 @@ DEBUG = config("DEBUG", default=False)
 BOTNET_TOKEN = config("BOTNET_TOKEN")
 GOOGLE_API_KEY = config("GOOGLE_API_KEY")
 
+# guild
+CELLAR_GUILD_ID = config("CELLAR_GUILD_ID", default=None)
+
 # channels
 CHANNELBOT_LOG_ID = 1110930833314938950
 TECHNOFUTUR_CALENDAR_CHANNEL_ID = config(
