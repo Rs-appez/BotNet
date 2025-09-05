@@ -2,6 +2,7 @@ from nextcord import slash_command
 from nextcord.ext import commands
 from bot.botNet import BotNet
 from models.calendar import Calendar
+from models.scheduler import Scheduler
 
 import config
 import datetime
@@ -11,6 +12,7 @@ class Technofutur(commands.Cog):
     def __init__(self, bot: BotNet):
         self.bot = bot
         self.calendar = Calendar()
+        self.scheduler = Scheduler(self.bot, self.calendar)
 
     @slash_command(
         name="techno_calendar",
