@@ -15,7 +15,7 @@ class Technofutur(commands.Cog):
     @slash_command(
         name="techno_calendar",
         description="calendar technofutur",
-        default_member_permissions=0,
+        default_member_permissions=1,
     )
     async def calendar(self, interaction):
         """Send the Technofutur calendar URL."""
