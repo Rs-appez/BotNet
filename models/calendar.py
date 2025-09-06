@@ -101,7 +101,8 @@ class Calendar:
 
     def __load_calendar(self):
         url_request = f"{config.URL_SHEET_API}{
-            config.TECHNOFUTUR_CALENDAR_ID}?includeGridData={True}&key={config.GOOGLE_API_KEY}"
+            config.TECHNOFUTUR_CALENDAR_ID
+        }?includeGridData={True}&key={config.GOOGLE_API_KEY}"
         res = requests.get(url_request)
         if res.status_code != 200:
             raise Exception(f"Error loading calendar: {res.status_code} - {res.text}")
