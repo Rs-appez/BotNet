@@ -71,6 +71,8 @@ class Week:
 
 
 class Calendar:
+    next_week: Week = None
+
     def __init__(self):
         self.weeks: List[Week] = []
         self.calendar_json = None
@@ -114,6 +116,20 @@ class Calendar:
         for week in self.weeks:
             if week.has_day(day, month):
                 return week
+
+    def is_updated(self) -> bool | Week:
+        """
+        Check if the calendar has been updated.
+        If updated, return the new week, else return False.
+        """
+        if not self.next_week:
+            return False
+
+        week = self.get_week(self.next_week.days[0].day, self.next_week.days[0].month)
+        if week != self.next_week:
+            return week
+
+        return False
 
 
 if __name__ == "__main__":
