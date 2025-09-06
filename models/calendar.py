@@ -35,6 +35,17 @@ class Day:
             string += " Congé 🎉"
         return string
 
+    def __eq__(self, other):
+        if not isinstance(other, Day):
+            return False
+        return (
+            self.day_name == other.day_name
+            and self.month == other.month
+            and self.day == other.day
+            and self.lesson == other.lesson
+            and self.location == other.location
+        )
+
 
 class Week:
     def __init__(self):
@@ -52,6 +63,11 @@ class Week:
             if self.days
             else "No lessons this week"
         )
+
+    def __eq__(self, other):
+        if not isinstance(other, Week):
+            return False
+        return self.days == other.days
 
 
 class Calendar:
