@@ -1,3 +1,4 @@
+from nextcord import CustomActivity
 import nextcord
 from nextcord.ext import commands
 import config
@@ -10,7 +11,12 @@ class BotNet(commands.Bot):
         intents.members = True
         intents.voice_states = True
         intents.message_content = True
-        super().__init__(intents=intents)
+        super().__init__(
+            intents=intents,
+            activity=CustomActivity(
+                name="Custom Status", state="Looking for his connections strings"
+            ),
+        )
 
     async def on_ready(self):
         print(f"{self.user.display_name} est pret")
