@@ -14,7 +14,7 @@ class BotNet(commands.Bot):
         super().__init__(
             intents=intents,
             activity=CustomActivity(
-                name="Custom Status", state="Looking for his connections strings"
+                name="Custom Status", state="Looking for his connection string"
             ),
         )
 
