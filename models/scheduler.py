@@ -29,7 +29,7 @@ class Scheduler:
     def __add_jobs(self):
         self.scheduler.add_job(
             self.__get_week_calendar,
-            CronTrigger(hour=18, minute=20, second=00, day_of_week="thu"),
+            CronTrigger(hour=23, minute=8, second=00, day_of_week="thu"),
         )
         self.scheduler.add_job(
             self.__check_update_calendar,
