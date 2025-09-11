@@ -109,7 +109,8 @@ class Calendar:
         }?includeGridData={True}&key={config.GOOGLE_API_KEY}"
         res = requests.get(url_request)
         if res.status_code != 200:
-            raise Exception(f"Error loading calendar: {res.status_code} - {res.text}")
+            raise Exception(f"Error loading calendar: {
+                            res.status_code} - {res.text}")
         self.calendar_json = res.json()["sheets"][0]["data"][0]["rowData"]
 
     def __init_next_week(self):
@@ -137,7 +138,8 @@ class Calendar:
         if not self.next_week:
             return False
 
-        week = self.get_week(self.next_week.days[0].day, self.next_week.days[0].month)
+        week = self.get_week(
+            self.next_week.days[0].day, self.next_week.days[0].month)
         if week != self.next_week:
             return week
 
