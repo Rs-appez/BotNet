@@ -1,6 +1,7 @@
 from typing import List
 import requests
 import config
+import datetime
 
 
 class Day:
@@ -71,11 +72,12 @@ class Week:
 
 
 class Calendar:
-    next_week: Week = None
-
     def __init__(self):
         self.weeks: List[Week] = []
+        self.next_week: Week = None
         self.calendar_json = None
+
+        self.__init_next_week()
 
     def __reset_calendar(self):
         self.__load_calendar()
@@ -109,6 +111,16 @@ class Calendar:
         if res.status_code != 200:
             raise Exception(f"Error loading calendar: {res.status_code} - {res.text}")
         self.calendar_json = res.json()["sheets"][0]["data"][0]["rowData"]
+
+    def __init_next_week(self):
+        today = datetime.datetime.now()
+        match today.weekday():
+            case 3 | 4 | 5 | 6:
+                today = today + datetime.timedelta(days=7)
+
+        day = today.day
+        month = today.month
+        self.next_week = self.get_week(day, month)
 
     def get_week(self, day: int, month: int) -> Week:
         self.__reset_calendar()
