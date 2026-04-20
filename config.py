@@ -19,3 +19,5 @@ URL_SHEET_API = "https://sheets.googleapis.com/v4/spreadsheets/"
 
 # technofutur
 TECHNOFUTUR_CALENDAR_ID = config("TECHNOFUTUR_CALENDAR_ID", default=None)
+TECHNOFUTUR_NEXT_DAY_HOUR = 23
+TECHNOFUTUR_NEXT_DAY_MINUTE = 0

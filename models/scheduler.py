@@ -6,13 +6,15 @@ import datetime
 import config
 
 from models.calendar import Calendar
+from models.user_preferences import UserPreferences
 from bot.botNet import BotNet
 
 
 class Scheduler:
-    def __init__(self, bot: BotNet, calendar: Calendar) -> None:
+    def __init__(self, bot: BotNet, calendar: Calendar, user_preferences: UserPreferences = None) -> None:
         self.calendar: Calendar = calendar
         self.bot: BotNet = bot
+        self.user_preferences: UserPreferences = user_preferences
         self.announce_channel: TextChannel = None
         self.scheduler = AsyncIOScheduler()
         self.__init_schedule()
@@ -34,6 +36,10 @@ class Scheduler:
         self.scheduler.add_job(
             self.__check_update_calendar,
             CronTrigger(hour=17, minute=00, second=00),
+        )
+        self.scheduler.add_job(
+            self.__send_next_day_lesson,
+            CronTrigger(hour=config.TECHNOFUTUR_NEXT_DAY_HOUR, minute=config.TECHNOFUTUR_NEXT_DAY_MINUTE, second=0),
         )
 
     async def __get_calendar_channel(self) -> TextChannel:
@@ -66,3 +72,20 @@ class Scheduler:
                 str(week) + "```"
             channel = await self.__get_calendar_channel()
             await channel.send(msg)
+
+    async def __send_next_day_lesson(self):
+        """Send the lesson for tomorrow if there is one."""
+        next_day_lesson = self.calendar.get_next_day_lesson()
+        
+        if next_day_lesson and next_day_lesson.lesson and next_day_lesson.lesson != "No lesson":
+            msg = f"📅 **Tomorrow's lesson:**\n```{str(next_day_lesson)}```"
+            
+            # Send to users with DM notifications enabled
+            if self.user_preferences:
+                dm_users = self.user_preferences.get_dm_users()
+                for user_id in dm_users:
+                    try:
+                        user = await self.bot.fetch_user(user_id)
+                        await user.send(msg)
+                    except Exception as e:
+                        print(f"Error sending DM to user {user_id}: {e}")
