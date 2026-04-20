@@ -89,9 +89,11 @@ class Calendar:
                 continue
 
             data = r["values"]
-            day_name = data[0]["formattedValue"]
+            day_name = data[0].get("formattedValue", "")
 
-            day_date, month_date = tuple(data[1]["formattedValue"].split("/"))
+            day_date, month_date = tuple(
+                data[1].get("formattedValue", "00/00").split("/")
+            )
             lesson = r["values"][2].get("formattedValue", "No lesson")
             teacher = r["values"][4].get("formattedValue", "")
             location = r["values"][5].get("formattedValue", "")
