@@ -3,6 +3,7 @@ from nextcord.ext import commands
 from bot.botNet import BotNet
 from models.calendar import Calendar
 from models.scheduler import Scheduler
+from models.user_preferences import UserPreferences
 
 import config
 import datetime
@@ -12,7 +13,8 @@ class Technofutur(commands.Cog):
     def __init__(self, bot: BotNet):
         self.bot = bot
         self.calendar = Calendar()
-        self.scheduler = Scheduler(self.bot, self.calendar)
+        self.user_preferences = UserPreferences()
+        self.scheduler = Scheduler(self.bot, self.calendar, self.user_preferences)
 
     @slash_command(
         name="techno_calendar",
@@ -63,6 +65,27 @@ class Technofutur(commands.Cog):
             await interaction.followup.send("```" + str(next_week) + "```")
         else:
             await interaction.followup.send("No week corresponding to the next week.")
+
+    @slash_command(
+        name="toggle_dm_notifications",
+        description="Toggle DM notifications for daily lessons",
+        default_member_permissions=0,
+    )
+    async def toggle_dm_notifications(self, interaction):
+        """Toggle DM notifications for the user."""
+        user_id = interaction.user.id
+        enabled = self.user_preferences.toggle_dm_notifications(user_id)
+        
+        if enabled:
+            await interaction.response.send_message(
+                "✅ DM notifications enabled! You'll receive tomorrow's lessons via direct message.",
+                ephemeral=True,
+            )
+        else:
+            await interaction.response.send_message(
+                "❌ DM notifications disabled! You'll no longer receive lessons via DM.",
+                ephemeral=True,
+            )
 
 
 def setup(bot):
