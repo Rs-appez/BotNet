@@ -13,6 +13,7 @@ class Day:
         lesson: str = "",
         teacher: str = "",
         location: str = "",
+        room: str = "",
     ):
         self.day_name: str = day_name
         self.month: int = int(month)
@@ -21,6 +22,7 @@ class Day:
         self.lesson: str = lesson
         self.teacher: str = teacher
         self.location: str = location
+        self.room: str = room
 
     def __str__(self):
         string = f"{self.day_name:<10} "
@@ -31,7 +33,7 @@ class Day:
 
         string += f" -> {self.day:>2}/{self.month:<2}: "
         if self.lesson:
-            string += f"{self.lesson:<20} "
+            string += f"{self.lesson:<20} {self.room}"
         else:
             string += " Congé 🎉"
         return string
@@ -97,9 +99,13 @@ class Calendar:
             lesson = r["values"][2].get("formattedValue", "No lesson")
             teacher = r["values"][4].get("formattedValue", "")
             location = r["values"][5].get("formattedValue", "")
+            if len(r["values"]) > 6:
+                room = r["values"][6].get("formattedValue", "")
+            else:
+                room = ""
 
             current_week.add_day(
-                Day(day_name, month_date, day_date, lesson, teacher, location)
+                Day(day_name, month_date, day_date, lesson, teacher, location, room)
             )
             if len(current_week.days) == 7:
                 self.weeks.append(current_week)
