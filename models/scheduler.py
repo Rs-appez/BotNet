@@ -80,10 +80,6 @@ class Scheduler:
         if next_day_lesson and next_day_lesson.lesson and next_day_lesson.lesson != "No lesson":
             msg = f"📅 **Tomorrow's lesson:**\n```{str(next_day_lesson)}```"
             
-            # Send to public channel
-            channel = await self.__get_calendar_channel()
-            await channel.send(msg)
-            
             # Send to users with DM notifications enabled
             if self.user_preferences:
                 dm_users = self.user_preferences.get_dm_users()
