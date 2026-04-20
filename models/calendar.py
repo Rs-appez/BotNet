@@ -60,6 +60,13 @@ class Week:
     def has_day(self, day: int, mouth: int) -> bool:
         return any(((d.day == day) and (d.month == mouth)) for d in self.days)
 
+    def get_day(self, day: int, month: int) -> Day:
+        """Get a specific day from the week."""
+        for d in self.days:
+            if d.day == day and d.month == month:
+                return d
+        return None
+
     def __str__(self):
         return (
             "\n".join(str(day) for day in self.days[:5])
@@ -136,6 +143,17 @@ class Calendar:
         for week in self.weeks:
             if week.has_day(day, month):
                 return week
+
+    def get_next_day_lesson(self) -> Day:
+        """Get the lesson for tomorrow."""
+        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+        day = tomorrow.day
+        month = tomorrow.month
+        
+        week = self.get_week(day, month)
+        if week:
+            return week.get_day(day, month)
+        return None
 
     def is_updated(self) -> bool | Week:
         """

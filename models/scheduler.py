@@ -35,6 +35,10 @@ class Scheduler:
             self.__check_update_calendar,
             CronTrigger(hour=17, minute=00, second=00),
         )
+        self.scheduler.add_job(
+            self.__send_next_day_lesson,
+            CronTrigger(hour=config.TECHNOFUTUR_NEXT_DAY_HOUR, minute=config.TECHNOFUTUR_NEXT_DAY_MINUTE, second=0),
+        )
 
     async def __get_calendar_channel(self) -> TextChannel:
         if not self.announce_channel:
@@ -64,5 +68,14 @@ class Scheduler:
 
             msg = "@here\nThe schedule has been updated !!! :\n```" + \
                 str(week) + "```"
+            channel = await self.__get_calendar_channel()
+            await channel.send(msg)
+
+    async def __send_next_day_lesson(self):
+        """Send the lesson for tomorrow if there is one."""
+        next_day_lesson = self.calendar.get_next_day_lesson()
+        
+        if next_day_lesson and next_day_lesson.lesson and next_day_lesson.lesson != "No lesson":
+            msg = f"📅 **Tomorrow's lesson:**\n```{str(next_day_lesson)}```"
             channel = await self.__get_calendar_channel()
             await channel.send(msg)
