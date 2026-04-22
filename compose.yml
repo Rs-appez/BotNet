@@ -1,0 +1,10 @@
+services:
+  bot:
+    build: .
+    container_name: botnet
+    environment:
+      - BOTNET_TOKEN=${BOTNET_TOKEN}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - TECHNOFUTUR_CALENDAR_CHANNEL_ID=${TECHNOFUTUR_CALENDAR_CHANNEL_ID}
+      - TECHNOFUTUR_CALENDAR_ID=${TECHNOFUTUR_CALENDAR_ID}
+    restart: unless-stopped
