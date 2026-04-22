@@ -2,8 +2,7 @@
 
 name: Fly Deploy
 on:
-  push:
-    branches:
+  workflow_dispatch: 
 jobs:
   deploy:
     name: Deploy app
