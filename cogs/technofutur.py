@@ -75,7 +75,7 @@ class Technofutur(commands.Cog):
         """Toggle DM notifications for the user."""
         user_id = interaction.user.id
         enabled = self.user_preferences.toggle_dm_notifications(user_id)
-        
+
         if enabled:
             await interaction.response.send_message(
                 "✅ DM notifications enabled! You'll receive tomorrow's lessons via direct message.",
@@ -86,6 +86,10 @@ class Technofutur(commands.Cog):
                 "❌ DM notifications disabled! You'll no longer receive lessons via DM.",
                 ephemeral=True,
             )
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.scheduler.start()
 
 
 def setup(bot):
