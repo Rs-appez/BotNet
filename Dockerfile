@@ -7,4 +7,4 @@ COPY requirements.txt /botNet/
 RUN pip install -r requirements.txt
 COPY . /botNet/
 
-CMD python main.py
+CMD python -u main.py
