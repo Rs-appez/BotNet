@@ -20,9 +20,18 @@ class BotNet(commands.Bot):
 
     async def on_ready(self):
         print(f"{self.user.display_name} est pret")
+        import datetime
+        import pytz
+        tz = pytz.timezone('Europe/Brussels')
+        now = datetime.datetime.now(tz)
+        print(f"[BOT] Current time (Europe/Brussels): {now}")
+        
         if not config.DEBUG:
             guild = self.get_guild(int(config.CELLAR_GUILD_ID))
             if guild:
                 await guild.get_channel(int(config.CHANNELBOT_LOG_ID)).send("UP !")
 
-        self.cogs.get("Technofutur").scheduler.scheduler.start()
+        scheduler_cog = self.cogs.get("Technofutur")
+        if scheduler_cog:
+            scheduler_cog.scheduler.scheduler.start()
+            print("[BOT] Scheduler started!")
