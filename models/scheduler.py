@@ -34,15 +34,16 @@ class Scheduler:
         self.scheduler.configure(job_defaults=job_defaults)
 
     def __add_jobs(self):
-        self.scheduler.add_job(
-            self.__get_week_calendar,
-            CronTrigger(hour=16, minute=30, second=00, day_of_week="thu"),
-        )
-        self.scheduler.add_job(
-            self.__check_update_calendar,
-            CronTrigger(hour=17, minute=00, second=00),
-        )
-        self.scheduler.add_job(
+        if config.TECHNOFUTUR_CALENDAR_CHANNEL_ID:
+            _ = self.scheduler.add_job(
+                self.__get_week_calendar,
+                CronTrigger(hour=16, minute=30, second=00, day_of_week="thu"),
+            )
+            _ = self.scheduler.add_job(
+                self.__check_update_calendar,
+                CronTrigger(hour=17, minute=00, second=00),
+            )
+        _ = self.scheduler.add_job(
             self.__send_next_day_lesson,
             CronTrigger(
                 hour=config.TECHNOFUTUR_NEXT_DAY_HOUR,

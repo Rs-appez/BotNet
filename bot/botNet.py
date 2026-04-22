@@ -20,7 +20,7 @@ class BotNet(commands.Bot):
 
     async def on_ready(self):
         print(f"{self.user.display_name} est pret")
-        if not config.DEBUG:
+        if not config.DEBUG and config.CELLAR_GUILD_ID:
             guild = self.get_guild(int(config.CELLAR_GUILD_ID))
             if guild:
                 await guild.get_channel(int(config.CHANNELBOT_LOG_ID)).send("UP !")
