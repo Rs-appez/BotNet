@@ -19,6 +19,7 @@ class Scheduler:
         self.user_preferences: UserPreferences = user_preferences
         self.announce_channel: TextChannel = None
         self.scheduler = AsyncIOScheduler()
+        self.last_notification_day = None  # Track the last day we sent notifications
         self.__init_schedule()
         self.__add_jobs()
 
@@ -43,13 +44,10 @@ class Scheduler:
                 self.__check_update_calendar,
                 CronTrigger(hour=17, minute=00, second=00),
             )
+        # Job that runs every minute to check for user-specific notification times
         _ = self.scheduler.add_job(
-            self.__send_next_day_lesson,
-            CronTrigger(
-                hour=config.TECHNOFUTUR_NEXT_DAY_HOUR,
-                minute=config.TECHNOFUTUR_NEXT_DAY_MINUTE,
-                second=0,
-            ),
+            self.__send_next_day_lesson_personalized,
+            CronTrigger(minute="*"),  # Run every minute
         )
 
     async def __get_calendar_channel(self) -> TextChannel:
@@ -81,8 +79,11 @@ class Scheduler:
             channel = await self.__get_calendar_channel()
             await channel.send(msg)
 
-    async def __send_next_day_lesson(self):
-        """Send the lesson for tomorrow if there is one."""
+    async def __send_next_day_lesson_personalized(self):
+        """Send the lesson for tomorrow to users at their preferred time."""
+        now = datetime.datetime.now()
+        current_day = now.day
+
         next_day_lesson = self.calendar.get_next_day_lesson()
 
         if (
@@ -95,9 +96,20 @@ class Scheduler:
             # Send to users with DM notifications enabled
             if self.user_preferences:
                 dm_users = self.user_preferences.get_dm_users()
-                for user_id in dm_users:
-                    try:
-                        user = await self.bot.fetch_user(user_id)
-                        await user.send(msg)
-                    except Exception as e:
-                        print(f"Error sending DM to user {user_id}: {e}")
+                for user_id, user_data in dm_users.items():
+                    notification_hour = user_data.get("hour", 9)
+                    notification_minute = user_data.get("minute", 0)
+
+                    # Check if it's the right time for this user
+                    if (
+                        now.hour == notification_hour
+                        and now.minute == notification_minute
+                        and self.last_notification_day != current_day
+                    ):
+                        try:
+                            user = await self.bot.fetch_user(user_id)
+                            await user.send(msg)
+                            # Update the last notification day to avoid sending multiple times
+                            self.last_notification_day = current_day
+                        except Exception as e:
+                            print(f"Error sending DM to user {user_id}: {e}")
