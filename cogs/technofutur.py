@@ -1,59 +1,13 @@
-from nextcord import slash_command
+from nextcord import slash_command, Option
 from nextcord.ext import commands
 from bot.botNet import BotNet
 from models.calendar import Calendar
 from models.scheduler import Scheduler
 from models.user_preferences import UserPreferences
+from views.technofutur import TimeModal
 
 import config
 import datetime
-import nextcord
-
-
-class TimeModal(nextcord.ui.Modal):
-    """Modal for users to input their preferred notification time."""
-
-    def __init__(self, user_preferences: UserPreferences):
-        super().__init__(title="Set Notification Time")
-        self.user_preferences = user_preferences
-
-        self.time_input = nextcord.ui.TextInput(
-            label="Notification Time (HH:MM)",
-            placeholder="23:00",
-            min_length=5,
-            max_length=5,
-            required=True,
-            default_value="23:00",
-        )
-        self.add_item(self.time_input)
-
-    async def callback(self, interaction: nextcord.Interaction) -> None:
-        try:
-            time_str = self.time_input.value
-            hour, minute = map(int, time_str.split(":"))
-
-            if not (0 <= hour <= 23 and 0 <= minute <= 59):
-                raise ValueError("Invalid time format")
-
-            success = self.user_preferences.set_dm_notification_time(
-                interaction.user.id, hour, minute
-            )
-
-            if success:
-                await interaction.response.send_message(
-                    f"✅ Notification time set to **{hour:02d}:{minute:02d}**! You'll receive tomorrow's lessons at this time.",
-                    ephemeral=True,
-                )
-            else:
-                await interaction.response.send_message(
-                    "❌ Invalid time format. Please use HH:MM (e.g., 09:30)",
-                    ephemeral=True,
-                )
-        except ValueError:
-            await interaction.response.send_message(
-                "❌ Invalid time format. Please use HH:MM with hours 00-23 and minutes 00-59 (e.g., 09:30)",
-                ephemeral=True,
-            )
 
 
 class Technofutur(commands.Cog):
@@ -118,8 +72,13 @@ class Technofutur(commands.Cog):
         description="Toggle DM notifications for daily lessons",
         default_member_permissions=0,
     )
-    async def toggle_dm_notifications(self, interaction):
-        """Toggle DM notifications for the user with custom time setup."""
+    async def toggle_dm_notifications(
+        self,
+        interaction,
+        hour: int = Option(description="Hour (0-23)", required=False, min_value=0, max_value=23),
+        minute: int = Option(description="Minute (0-59)", required=False, min_value=0, max_value=59),
+    ):
+        """Toggle DM notifications for the user with optional time setup."""
         user_id = interaction.user.id
         
         # Check if user already has notifications enabled
@@ -132,11 +91,26 @@ class Technofutur(commands.Cog):
                 ephemeral=True,
             )
         else:
-            # Enable notifications and show modal to set time
-            enabled = self.user_preferences.toggle_dm_notifications(user_id)
-            if enabled:
-                modal = TimeModal(self.user_preferences)
-                await interaction.response.send_modal(modal)
+            # Enable notifications
+            if hour is not None and minute is not None:
+                # Use provided hour and minute directly
+                success = self.user_preferences.set_dm_notification_time(user_id, hour, minute)
+                if success:
+                    await interaction.response.send_message(
+                        f"✅ DM notifications enabled! You'll receive lessons at **{hour:02d}:{minute:02d}**.",
+                        ephemeral=True,
+                    )
+                else:
+                    await interaction.response.send_message(
+                        "❌ Invalid time provided.",
+                        ephemeral=True,
+                    )
+            else:
+                # Enable notifications and show modal to set time
+                enabled = self.user_preferences.toggle_dm_notifications(user_id)
+                if enabled:
+                    modal = TimeModal(self.user_preferences)
+                    await interaction.response.send_modal(modal)
 
     @slash_command(
         name="set_notification_time",
