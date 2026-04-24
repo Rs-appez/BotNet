@@ -1,12 +1,13 @@
 services:
   bot1:
     build: .
+    image: botnet:latest
     container_name: botnetAlex
     env_file: .env.prod
     restart: unless-stopped
 
   bot2:
-    build: .
+    image: botnet:latest
     container_name: botnetNico
     env_file: .env.prod2
     restart: unless-stopped
